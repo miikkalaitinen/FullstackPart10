@@ -1,9 +1,36 @@
-import { FlatList, View, StyleSheet } from 'react-native'
-import Text, { SubHeading } from './Text'
+import { FlatList, View, StyleSheet, Image } from 'react-native'
+import Text, { SubHeading, Heading } from './Text'
+import theme from '../theme'
 
 const styles = StyleSheet.create({
   separator: {
     height: 10,
+    backgroundColor: theme.colors.backgroundSecondary,
+  },
+  tinyLogo: {
+    width: 50,
+    height: 50,
+    borderRadius: 5,
+    margin: 15,
+  },
+  itemContainter: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  itemRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  langStyle: {
+    backgroundColor: theme.colors.primary,
+    alignSelf: 'flex-start',
+    marginStart: 80,
+    padding: 5,
+    borderRadius: 5,
+  },
+  infoStyle: {
+    alignItems: 'center',
+    margin: 20,
   },
 })
 
@@ -56,18 +83,45 @@ const repositories = [
 
 const ItemSeparator = () => <View style={styles.separator} />
 
-const RepositoryItem = ({ rep }) => {
-  console.log(rep)
+const StatBox = ({ title, children }) => {
+  function roundThousands(number) {
+    if (number < 1000) return number
+    else return `${Math.round(number / 100) / 10}k`
+  }
+
   return (
-    <>
-      <SubHeading>Full Name: {rep.fullName}</SubHeading>
-      <Text>Description: {rep.description}</Text>
-      <Text>Language: {rep.language}</Text>
-      <Text>Stars: {rep.stargazersCount}</Text>
-      <Text>Forks: {rep.forksCount}</Text>
-      <Text>Reviews: {rep.reviewCount}</Text>
-      <Text>Rating: {rep.ratingAverage}</Text>
-    </>
+    <View style={styles.infoStyle}>
+      <Text style={{ fontWeight: 'bold' }}>{roundThousands(children)}</Text>
+      <Text>{title}</Text>
+    </View>
+  )
+}
+
+const RepositoryItem = ({ rep }) => {
+  return (
+    <View style={styles.itemContainter}>
+      <View style={styles.itemRow}>
+        <Image
+          style={styles.tinyLogo}
+          source={{
+            uri: rep.ownerAvatarUrl,
+          }}
+        />
+        <View style={{ flexShrink: 1, marginRight: 10 }}>
+          <Heading>{rep.fullName}</Heading>
+          <SubHeading>{rep.description}</SubHeading>
+        </View>
+      </View>
+      <View style={styles.langStyle}>
+        <Text style={{ color: theme.colors.textAppbar }}>{rep.language}</Text>
+      </View>
+      <View style={[styles.itemRow, { justifyContent: 'center' }]}>
+        <StatBox title={'Stars'}>{rep.stargazersCount}</StatBox>
+        <StatBox title={'Forks'}>{rep.forksCount}</StatBox>
+        <StatBox title={'Reviews'}>{rep.reviewCount}</StatBox>
+        <StatBox title={'Rating'}>{rep.ratingAverage}</StatBox>
+      </View>
+    </View>
   )
 }
 
